@@ -125,6 +125,7 @@ gitdiff:
 
 
 ## Release History
+ - *v0.0.2*: Updated dependencies
  - *v0.0.1*: First Release
 
 ## License
