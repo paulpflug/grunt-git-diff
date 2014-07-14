@@ -81,6 +81,7 @@ gitdiff:
 
 
 ## Release History
+ - *v0.0.5*: Bugfix
  - *v0.0.4*: major rework
  - *v0.0.3*: Bugfix
  - *v0.0.2*: Updated dependencies

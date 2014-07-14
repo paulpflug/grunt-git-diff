@@ -87,7 +87,7 @@
       self = this;
       done = self.async();
       git = simpleGit();
-      git.diff("", function(err, content) {
+      return git.diff("", function(err, content) {
         var contents, filename, foundfiles, index;
         contents = content.split("\n");
         index = 0;
@@ -120,7 +120,7 @@
                   if (length === -1) {
                     length = contents.length;
                   }
-                  newdata = cb(contents.slice(0, length), hunk[5], options).join("\n");
+                  newdata = options.cb(contents.slice(0, length), hunk[5], options).join("\n");
                   data.splice(+hunk[3] - 1, hunk[2], newdata);
                 }
                 return grunt.file.write(array.dest, data.join("\n"));
@@ -138,7 +138,6 @@
         });
         return done();
       });
-      return options = this.options();
     });
   };
 

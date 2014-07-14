@@ -93,7 +93,7 @@ module.exports = (grunt) ->
                   length = index
                 if length == -1
                   length = contents.length
-                newdata = cb(contents.slice(0,length),hunk[5],options).join("\n")
+                newdata = options.cb(contents.slice(0,length),hunk[5],options).join("\n")
                 data.splice(+(hunk[3])-1,hunk[2],newdata)
               grunt.file.write(array.dest,data.join("\n"))
       self.files.forEach (array) -> 
@@ -102,5 +102,4 @@ module.exports = (grunt) ->
             console.log file
             grunt.file.copy(file,array.dest)
       done()
-    options = this.options()
     
