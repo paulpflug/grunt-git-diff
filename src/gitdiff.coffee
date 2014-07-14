@@ -11,6 +11,7 @@ module.exports = (grunt) ->
       cb: (string, prepend, append) ->
         return prepend+string+append
       })
+    hunkregex = new RegExp(options.hunkregex)
     self = this
     done = self.async()
     git = simpleGit()
@@ -32,12 +33,12 @@ module.exports = (grunt) ->
               data = grunt.file.read(file).split("\n")
               hunkindex = 3
               while hunkindex != -1 && (hunkindex < index || index == -1)
-                hunk = contents[hunkindex].match(options.hunkregex)
+                hunk = contents[hunkindex].match(hunkregex)
                 contents.splice(0,hunkindex+1)
 
                 index = index - hunkindex - 1
                 hunkindex = _.findIndex(contents, (str) ->
-                  str.search(options.hunkregex) > -1
+                  str.search(hunkregex) > -1
                   )             
                 length = hunkindex
                 if index > -1 && (length == -1 || index < hunkindex)

@@ -96,7 +96,7 @@ gitdiff:
     cb: (string, prepend) ->
       return string if not string
       keywords = [
-        "html","head","meta","link","body","include","doctype", "//","\\-","mixin","\\+","\\s$"]
+        "html","head","meta","link","body","include","doctype", "//","\\-","mixin","\\+","\\s$","\\w."]
       for k in keywords
         if string.search(new RegExp("\s*"+k)) != -1
           return string
@@ -125,6 +125,7 @@ gitdiff:
 
 
 ## Release History
+ - *v0.0.3*: Bugfix
  - *v0.0.2*: Updated dependencies
  - *v0.0.1*: First Release
 
