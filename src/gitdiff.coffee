@@ -4,12 +4,60 @@ module.exports = (grunt) ->
   grunt.registerMultiTask "gitdiff", "Extracts the git diff" , () ->
     options = this.options()
     _.defaults(options, {
-      hunkregex: /@@ \-(\d+),(\d+) \+(\d+),(\d+) @@/
-      prependplus: "<span style='color:blue'>" 
-      prependminus: "<span style='color:red'>"
-      append: "</span>"
-      cb: (string, prepend, append) ->
-        return prepend+string+append
+      hunkregex: /@@ \-(\d+),(\d+) \+(\d+),(\d+) @@ ([\s\S]+)/
+      prependplus: "span(style='color:red') "
+      prependminus: "span(style='color:red') " 
+      cb: (hunk, environment,options) ->
+        keywords = ["html","head","meta","link","body","include","doctype", "//","\\-","mixin","\\+"]
+        empty = /\s*\s$/
+        env = /\w+\.$/
+        environments = [environment]
+        lastws = -1
+        j = 0
+        while j < hunk.length
+          str = hunk[j]
+          switch str[0]
+            when "-" 
+              str = str.substr(1)   
+              prepend = options.prependminus             
+            when "+" 
+              str = str.substr(1) 
+              prepend = options.prependplus
+            else
+              prepend = false
+          if str.search(empty) == -1
+            whitespace = str.match(/(^\s+)\S+/)
+            if whitespace
+              whitespace = whitespace[1].length
+            else
+              whitespace = 0
+            if lastws> -1
+              if whitespace > lastws
+                environments.push hunk[j-1]
+              else if whitespace < lastws
+                environments.pop()
+            if prepend
+              keyword = false
+              for k in keywords
+                if str.search(new RegExp("\s*"+k)) != -1
+                  keyword = true
+                  break;
+              if str.search(env) != -1
+                keyword = true
+              if not keyword
+                ws = str.substr(0,whitespace)
+                string = str.substr(whitespace)  
+                if string[0] == "|"
+                  str = ws + "| #["+prepend + string.substr(1)+"]"
+                else if environments.length > 0 and environments[environments.length-1].search(env) != -1
+                  str = ws + "#["+prepend + string+"]"
+                else
+                  str = ws + prepend + "#["+ string+"]"
+            lastws = whitespace
+          if prepend
+            hunk[j] = str
+          j++
+        return hunk
       })
     hunkregex = new RegExp(options.hunkregex)
     self = this
@@ -45,15 +93,8 @@ module.exports = (grunt) ->
                   length = index
                 if length == -1
                   length = contents.length
-                dataindex = +(hunk[3])-1
-                j = 0
-                while j < length
-                  switch contents[j][0]
-                    when "-" 
-                      data.splice(dataindex+j,0,options.cb(contents[j].substr(1),options.prependminus,options.append))                 
-                    when "+" 
-                      data.splice(dataindex+j,1,options.cb(contents[j].substr(1),options.prependplus,options.append))
-                  j++
+                newdata = cb(contents.slice(0,length),hunk[5],options).join("\n")
+                data.splice(+(hunk[3])-1,hunk[2],newdata)
               grunt.file.write(array.dest,data.join("\n"))
       self.files.forEach (array) -> 
         array.src.forEach (file) ->
