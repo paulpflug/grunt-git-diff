@@ -6,6 +6,8 @@ A simple [Grunt][grunt] multitask that uses git diff information to modify the c
 
 Used in [paged-media-boilerplate][paged-media-boilerplate].
 
+Makes use of [simple-git][simple-git]
+
 ## Table of Contents
 
 <!-- toc -->
@@ -32,7 +34,7 @@ grunt.loadNpmTasks('grunt-git-diff');
 [grunt]: https://github.com/cowboy/grunt
 [getting_started]: https://github.com/cowboy/grunt/blob/master/docs/getting_started.md
 [paged-media-boilerplate]: https://github.com/paulpflug/paged-media-boilerplate
-
+[simple-git]: https://github.com/steveukx/git-js
 ## Documentation
 
 Here the available options with the corresponding defaults:
@@ -41,7 +43,7 @@ Here the available options with the corresponding defaults:
 # Note, that the index 2 is the number of overwritten lines
 # index 3 is the linenumber where to overwrite, and index 5 is the current 
 # environment, important for jade parsing
-hunkregex: /@@ \-(\d+),(\d+) \+(\d+),(\d+) @@ ([\s\S]+)/
+hunkregex: /@@ \-(\d+),(\d+) \+(\d+),(\d+) @@([\s\S]*)/
 
 # string which is prepended if a line is added
 prependplus: "span(style='color:red') "
@@ -81,6 +83,7 @@ gitdiff:
 
 
 ## Release History
+ - *v0.0.6*: Changed output / added test / bugfixed
  - *v0.0.5*: Bugfix
  - *v0.0.4*: major rework
  - *v0.0.3*: Bugfix

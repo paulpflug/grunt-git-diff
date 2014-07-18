@@ -8,7 +8,10 @@ module.exports = (grunt) ->
     watch:
       coffee:
         files: ["src/**/*.coffee"]
-        tasks: ['newer:coffee']
+        tasks: ["newer:coffee","mochaTest"]
+      test:
+        files: ["test/**/*.coffee"]
+        tasks: ["newer:mochaTest"]
     #   copy:
     #     files: ["src/**/*.jade"]
     #     tasks: ['newer:copy']
@@ -41,6 +44,12 @@ module.exports = (grunt) ->
     concurrent:
       compile:
         tasks: ["coffee"]#,"copy"]
+    mochaTest: 
+      test: 
+        options: 
+          reporter: 'spec',
+          require: ['coffee-script/register']
+        src: ['test/**/*.coffee']
 
   grunt.registerTask "addTocToReadme", "Adds a ToC to the readme", () ->
     toc = require("marked-toc")
