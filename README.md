@@ -83,6 +83,7 @@ gitdiff:
 
 
 ## Release History
+ - *v0.0.7*: using stdout stream
  - *v0.0.6*: Changed output / added test / bugfixed
  - *v0.0.5*: Bugfix
  - *v0.0.4*: major rework

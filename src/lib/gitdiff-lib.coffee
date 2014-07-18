@@ -27,8 +27,9 @@ getTagFromJadeString = (string) ->
   return [tag,string]
 parseJade = (hunk, environment, options) ->
     keywords = ["html","head","meta","link","body","include","doctype", "//","\\-","mixin","\\+","img","figure","blockquote"]
-    empty = /\s*\s$/
+    empty = /^[\s]*$/
     env = /\w+\.$/
+    envadv = /^\w+\.$/
     environments = []
     environments.push environment if environment
     lastws = -1
@@ -50,6 +51,8 @@ parseJade = (hunk, environment, options) ->
           whitespace = whitespace[1].length
         else
           whitespace = 0
+        if whitespace == 0
+          environments = []
         if lastws> -1
           if whitespace > lastws
             environments.push hunk[j-1]
@@ -61,11 +64,14 @@ parseJade = (hunk, environment, options) ->
             if str.search(new RegExp("\s*"+k)) != -1
               keyword = true
               break;
-          if str.search(env) != -1
+          if str.substr(whitespace).search(envadv) != -1
             keyword = true
           if not keyword
             ws = str.substr(0,whitespace)
             string = str.substr(whitespace)  
+            if string.search("Jeder Teilnehmer muss sich sicher authentifizieren und") > -1
+              console.log environments
+              console.log hunk
             if string[0] == "|"
               str = ws + "| #["+prepend + string.substr(2)+"]"
             else if environments.length > 0 and environments[environments.length-1].search(env) != -1
@@ -84,6 +90,7 @@ options = {
   options:
     hunkregex: /@@ \-(\d+),(\d+) \+(\d+),(\d+) @@([\s\S]*)/
     parser: "jade"
+    trimFirstWhitespace: true
   jade:
     options:
       prependplus: "span(style='color:blue') "

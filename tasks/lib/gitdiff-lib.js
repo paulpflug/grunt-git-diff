@@ -39,10 +39,11 @@
   };
 
   parseJade = function(hunk, environment, options) {
-    var empty, env, environments, j, k, keyword, keywords, lastws, prepend, str, string, tag, whitespace, ws, _i, _len;
+    var empty, env, envadv, environments, j, k, keyword, keywords, lastws, prepend, str, string, tag, whitespace, ws, _i, _len;
     keywords = ["html", "head", "meta", "link", "body", "include", "doctype", "//", "\\-", "mixin", "\\+", "img", "figure", "blockquote"];
-    empty = /\s*\s$/;
+    empty = /^[\s]*$/;
     env = /\w+\.$/;
+    envadv = /^\w+\.$/;
     environments = [];
     if (environment) {
       environments.push(environment);
@@ -70,6 +71,9 @@
         } else {
           whitespace = 0;
         }
+        if (whitespace === 0) {
+          environments = [];
+        }
         if (lastws > -1) {
           if (whitespace > lastws) {
             environments.push(hunk[j - 1]);
@@ -86,12 +90,16 @@
               break;
             }
           }
-          if (str.search(env) !== -1) {
+          if (str.substr(whitespace).search(envadv) !== -1) {
             keyword = true;
           }
           if (!keyword) {
             ws = str.substr(0, whitespace);
             string = str.substr(whitespace);
+            if (string.search("Jeder Teilnehmer muss sich sicher authentifizieren und") > -1) {
+              console.log(environments);
+              console.log(hunk);
+            }
             if (string[0] === "|") {
               str = ws + "| #[" + prepend + string.substr(2) + "]";
             } else if (environments.length > 0 && environments[environments.length - 1].search(env) !== -1) {
@@ -118,7 +126,8 @@
   options = {
     options: {
       hunkregex: /@@ \-(\d+),(\d+) \+(\d+),(\d+) @@([\s\S]*)/,
-      parser: "jade"
+      parser: "jade",
+      trimFirstWhitespace: true
     },
     jade: {
       options: {
